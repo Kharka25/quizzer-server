@@ -1,6 +1,7 @@
 package com.skyehub.quizzer;
 
 import com.skyehub.quizzer.dto.SignupDto;
+import com.skyehub.quizzer.error.ErrorResponse;
 import com.skyehub.quizzer.profile.ProfileRepository;
 import com.skyehub.quizzer.profile.UserProfile;
 import com.skyehub.quizzer.shared.GenericResponse;
@@ -98,6 +99,20 @@ public class AuthControllerTest {
         SignupDto signupDto = signupValidUser();
         ResponseEntity<GenericResponse> response = postSignup(signupDto, GenericResponse.class);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage()).isNotNull();
+    }
+
+    @Test
+    public void signupUser_whenUserIsInvalid_returnErrorResponse() {
+        SignupDto signupDto = signupInvalidUser(null, null);
+        ResponseEntity<ErrorResponse> response = postSignup(signupDto, ErrorResponse.class);
+        assertThat(Objects.requireNonNull(response.getBody()).url()).isEqualTo(API_1_0_AUTH_REGISTER);
+    }
+
+    @Test
+    public void signupUser_whenUserIsInvalid_returnErrorResponseWithValidationErrors() {
+        SignupDto signupDto = signupInvalidUser(null, null);
+        ResponseEntity<ErrorResponse> response = postSignup(signupDto, ErrorResponse.class);
+        assertThat(Objects.requireNonNull(response.getBody()).errors().size()).isEqualTo(2);
     }
 
     @Test
