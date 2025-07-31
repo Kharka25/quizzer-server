@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/1.0/auth")
 public class AuthController {
@@ -18,7 +20,7 @@ public class AuthController {
     ProfileService profileService;
 
     @PostMapping("/register")
-    private GenericResponse signUp(@RequestBody SignupDto signupDto) {
+    private GenericResponse signUp(@Valid @RequestBody SignupDto signupDto) {
         profileService.create(signupDto);
         return new GenericResponse("Profile created");
     }

@@ -5,9 +5,6 @@ import com.skyehub.quizzer.profile.ProfileRepository;
 import com.skyehub.quizzer.profile.UserProfile;
 import com.skyehub.quizzer.shared.GenericResponse;
 
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,28 +31,67 @@ public class AuthControllerTest {
     @Autowired
     ProfileRepository profileRepository;
 
-    private static SignupDto signUpUser() {
+    private static SignupDto signupValidUser() {
         return new SignupDto("me@mail.com", "P4ssword");
+    }
+
+    private static SignupDto signupInvalidUser(String email, String password) {
+        return new SignupDto(email, password);
     }
 
     @Test
     @DirtiesContext
     public void signupUser_whenUserIsValid_returnOkStatusCode() {
-        SignupDto signupDto = signUpUser();
+        SignupDto signupDto = signupValidUser();
         ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
+    public void signupUser_whenUserEmailIsNull_returnBadRequest() {
+        SignupDto signupDto = signupInvalidUser(null, "P4ssword");
+        ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void signupUser_whenUserEmailIsInvalid_returnBadRequest() {
+        SignupDto signupDto = signupInvalidUser("me.mail", "P4ssword");
+        ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void signupUser_whenUserPasswordIsNull_returnBadRequest() {
+        SignupDto signupDto = signupInvalidUser("me@mail.com", null);
+        ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void signupUser_whenUserPasswordIsInvalid_returnBadRequest() {
+        SignupDto signupDto = signupInvalidUser("me@mail.com", "Password");
+        ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void signupUser_whenPasswordLengthIsShort_returnBadRequest() {
+        SignupDto signupDto = signupInvalidUser("me@mail.com", "P4sswd");
+        ResponseEntity<Object> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
     public void signupUser_whenUserIsValid_createUserProfile() {
-        SignupDto signupDto = signUpUser();
+        SignupDto signupDto = signupValidUser();
         restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, String.class);
         assertThat(profileRepository.count()).isEqualTo(1);
     }
 
     @Test
     public void signupUser_whenUserIsValid_returnSuccessMessage() {
-        SignupDto signupDto = signUpUser();
+        SignupDto signupDto = signupValidUser();
         ResponseEntity<GenericResponse> response = restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, GenericResponse.class);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage()).isNotNull();
     }
@@ -63,7 +99,7 @@ public class AuthControllerTest {
     @Test
     @DirtiesContext
     public void signupUser_whenUserIsValid_hashUserPasswordInDb() {
-        SignupDto signupDto = signUpUser();
+        SignupDto signupDto = signupValidUser();
         restTemplate.postForEntity(API_1_0_AUTH_REGISTER, signupDto, GenericResponse.class);
         List<UserProfile> users = profileRepository.findAll();
         UserProfile userInDb = users.get(0);
