@@ -1,4 +1,4 @@
-package com.skyehub.quizzer.profile;
+package com.skyehub.quizzer.auth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

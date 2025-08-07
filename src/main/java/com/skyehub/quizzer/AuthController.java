@@ -1,7 +1,7 @@
 package com.skyehub.quizzer;
 
-import com.skyehub.quizzer.dto.SignupDto;
-import com.skyehub.quizzer.profile.ProfileService;
+import com.skyehub.quizzer.dto.AuthDto;
+import com.skyehub.quizzer.auth.ProfileService;
 import com.skyehub.quizzer.shared.GenericResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,14 @@ public class AuthController {
     ProfileService profileService;
 
     @PostMapping("/register")
-    private GenericResponse signUp(@Valid @RequestBody SignupDto signupDto) {
-        profileService.create(signupDto);
+    private GenericResponse signUp(@Valid @RequestBody AuthDto authDto) {
+        profileService.create(authDto);
         return new GenericResponse("Profile created");
+    }
+
+    @PostMapping("/login")
+    private GenericResponse login(@Valid @RequestBody AuthDto authDto) {
+        profileService.login(authDto);
+        return new GenericResponse();
     }
 }

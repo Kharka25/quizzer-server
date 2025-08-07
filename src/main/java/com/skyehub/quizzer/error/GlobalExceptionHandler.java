@@ -2,6 +2,7 @@ package com.skyehub.quizzer.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,5 +19,11 @@ public class GlobalExceptionHandler {
             .map(error -> new FieldErrorResponse(error.getField(), error.getDefaultMessage())).toList();
     ErrorResponse errorResponse = ErrorResponse.of("Validation error", fieldErrorList, request.getServletPath());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<ErrorResponse> handleAuthException(HttpServletRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse("Invalid credentials", null, request.getServletPath());
+    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
   }
 }
