@@ -1,0 +1,54 @@
+name: Dev CI
+on:
+  push:
+    branches: ["dev"]
+  pull_request:
+    branches: ["dev"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: JDK Setup
+        uses: actions/setup-java@4
+        with:
+          cache: gradle
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Gradle Setup
+        uses: gradle/actions/setup-gradle@v4
+      - name: Wrapper Permission Grant
+        run: chmod +x ./gradlew
+      - name: Execute Gradle command
+        run: ./gradlew test
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v4
+      - name: JDK setup
+        uses: actions/setup-java@v4
+        with:
+          cache: gradle
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Gradle Setup
+        uses: gradle/actions/setup-gradle@v4
+      - name: Wrapper Permission Grant
+        run: chmod +x ./gradlew
+      - name: Execute Gradle
+        run: ./gradlew build
+  dependecy-submit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: JDK Setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Dependency Graph Submission
+        uses: gradle/actions/dependency-submission@v4
