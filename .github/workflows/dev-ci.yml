@@ -26,7 +26,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v4
+      - uses: gradle/wrapper-validation-action@v3
       - name: JDK setup
         uses: actions/setup-java@v3
         with:
@@ -51,4 +51,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Dependency Graph Submission
-        uses: gradle/actions/dependency-submission@v4
+        uses: gradle/actions/dependency-submission@{latest}
