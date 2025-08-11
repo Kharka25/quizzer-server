@@ -1,10 +1,11 @@
-package com.skyehub.quizzer;
+package com.skyehub.quizzer.auth;
 
 import com.skyehub.quizzer.dto.AuthDto;
-import com.skyehub.quizzer.auth.ProfileService;
 import com.skyehub.quizzer.shared.GenericResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +18,19 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     @Autowired
-    ProfileService profileService;
+    AuthService authService;
 
     @PostMapping("/register")
     private GenericResponse signUp(@Valid @RequestBody AuthDto authDto) {
-        profileService.create(authDto);
+        authService.create(authDto);
         return new GenericResponse("Profile created");
     }
 
     @PostMapping("/login")
-    private GenericResponse login(@Valid @RequestBody AuthDto authDto) {
-        profileService.login(authDto);
-        return new GenericResponse();
+    private ResponseEntity<String> login(@Valid @RequestBody AuthDto authDto) {
+        authService.login(authDto);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Access Token")
+                .body("success");
     }
 }

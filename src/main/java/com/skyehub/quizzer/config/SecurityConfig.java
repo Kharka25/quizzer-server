@@ -1,4 +1,4 @@
-package com.skyehub.quizzer;
+package com.skyehub.quizzer.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-
 
     @Autowired
     private UserDetailsService userDetailsService;

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class ProfileService implements UserDetailsService {
+public class AuthService implements UserDetailsService {
     private static final String USER_NOT_FOUND_MSG = "user with email %s not found";
 
     @Autowired
@@ -25,7 +25,7 @@ public class ProfileService implements UserDetailsService {
 
     ProfileRepository profileRepository;
 
-    public ProfileService(ProfileRepository profileRepository) {
+    public AuthService(ProfileRepository profileRepository) {
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.profileRepository = profileRepository;
     }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,6 +49,12 @@ public class AuthControllerTest {
 
     private static AuthDto authInvalidUser(String email, String password) {
         return new AuthDto(email, password);
+    }
+
+    private AuthDto loginValidUser() {
+        AuthDto authDto = authValidUser();
+        postSignup(authDto, Object.class);
+        return authValidUser();
     }
 
     @Test
@@ -122,7 +129,6 @@ public class AuthControllerTest {
         assertThat(Objects.requireNonNull(response.getBody()).getMessage()).isNotNull();
     }
 
-
     @Test
     public void userSignup_whenUserIsValid_hashUserPasswordInDb() {
         AuthDto authDto = authValidUser();
@@ -176,5 +182,28 @@ public class AuthControllerTest {
         AuthDto invalidAuth = authInvalidUser("me@mail.com", "Password12345");
         ResponseEntity<ErrorResponse> response = postLogin(invalidAuth, ErrorResponse.class);
        assertThat(Objects.requireNonNull(response.getBody()).message()).isEqualTo("Invalid credentials");
+    }
+
+    @Test
+    @DirtiesContext
+    public void userLogin_whenUserIsAuthenticated_returnOkStatusCode() {
+        AuthDto validAuth = loginValidUser();
+        ResponseEntity<String> response = postLogin(validAuth, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void userLogin_whenUserIsAuthenticated_returnSuccessMessage() {
+        AuthDto validAuth = loginValidUser();
+        ResponseEntity<String> response = postLogin(validAuth, String.class);
+        assertThat(response.getBody()).isEqualTo("success");
+    }
+
+    @Test
+    @DirtiesContext
+    public void userLogin_whenUserIsAuthenticated_generateAndReturnJwtTokenInResponseHeader() {
+        AuthDto validAuth = loginValidUser();
+        ResponseEntity<String> response = postLogin(validAuth, String.class);
+        assertThat(response.getHeaders().get(HttpHeaders.AUTHORIZATION)).isNotNull();
     }
 }
