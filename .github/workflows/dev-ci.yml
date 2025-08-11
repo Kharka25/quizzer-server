@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: JDK Setup
-        uses: actions/setup-java@3
+        uses: actions/setup-java@v3
         with:
           cache: gradle
           distribution: 'temurin'
@@ -25,7 +25,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v3
       - name: JDK setup
         uses: actions/setup-java@v3
@@ -39,16 +39,16 @@ jobs:
         run: chmod +x ./gradlew
       - name: Execute Gradle
         run: ./gradlew build
-  dependecy-submit:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v3
-      - name: JDK Setup
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Dependency Graph Submission
-        uses: gradle/actions/dependency-submission@{latest}
+#  dependecy-submit:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: JDK Setup
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'temurin'
+#      - name: Dependency Graph Submission
+#        uses: gradle/actions/dependency-submission@{latest}
